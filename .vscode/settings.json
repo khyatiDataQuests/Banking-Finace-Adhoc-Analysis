@@ -14,5 +14,6 @@
             "database": "banking_analytics",
             "username": "root"
         }
-    ]
+    ],
+    "r.lsp.promptToInstall": false
 }

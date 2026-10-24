@@ -11,12 +11,36 @@ join district d on c.district_id = d.a1
 group by d.a2
 order by total_customers desc;
 
+-- top 5 districts by customer count and percentage
+select d.a2 as district_name,
+       count(c.client_id) as total_customers,
+       round(count(c.client_id) * 100.0 / (select count(*) from client), 2) as customer_percentage
+from client c
+join district d on c.district_id = d.a1
+group by d.a2
+order by total_customers desc
+limit 5;
+
+-- average salary per district
+select
+    d.a2 as district_name,
+    d.a11 as average_salary,
+    count(c.client_id) as total_customers
+from district d
+left join client c
+    on d.a1 = c.district_id
+group by d.a1, d.a2, d.a11
+order by total_customers desc;
+
+
+
 /* q2. what is the gender distribution of customers?
    purpose: understand the gender composition of customers. */
 select case when substring(cast(birth_number as char), 3, 2) > 50 then 'female' else 'male' end as gender,
     count(*) as total_customers
 from client
 group by gender;
+
 
 /* q3. how does average customer age vary by district?
    purpose: compare customer age profiles across districts.
@@ -38,16 +62,37 @@ from transactions_combined
 group by year(date)
 order by transaction_year;
 
+-- monthly transaction trends
+select year(`date`) as transaction_year,
+       month(`date`) as transaction_month,
+       count(*) as total_transactions
+from transactions_combined
+group by year(`date`), month(`date`)
+order by transaction_year, transaction_month;
+
+
+
 /* q5. how do transaction counts and amounts differ by type?
    purpose: compare transaction frequency and recorded amounts. */
+-- transaction summary by type
 select type as transaction_type,
        count(*) as transaction_count,
        sum(amount) as total_amount,
-       avg(amount) as average_amount
+       avg(amount) as average_amount,
+       round(count(*) * 100.0 / (select count(*) from transactions_combined), 2) as transaction_percentage
 from transactions_combined
 group by type
 order by transaction_count desc;
 
+-- transaction summary by operation
+select
+    operation,
+    count(*) as total_transactions,
+    round(avg(amount), 2) as average_amount,
+    round(sum(amount), 2) as total_amount
+from transactions_combined
+group by operation
+order by total_amount desc;
 
 /* q6. which months have the highest transaction activity?
    purpose: identify busy months and possible seasonal patterns. */
@@ -186,6 +231,7 @@ order by average_amount desc;
 
 /* Q20. Which accounts have no recorded transactions?
 Purpose: identify accounts with no matching records in the transaction dataset.
+*/
 
 select a.account_id, a.account_type
 from account a
