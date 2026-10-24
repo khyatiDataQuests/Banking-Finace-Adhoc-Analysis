@@ -106,3 +106,5 @@ https://data.world/lpetrocelli/czech-financial-dataset-real-anonymized-transacti
 ## Project Goal
 
 The goal of this project is to demonstrate how SQL-based ad-hoc analysis can turn relational banking data into clear, evidence-based findings and practical questions for further business investigation.
+
+
